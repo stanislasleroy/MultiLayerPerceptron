@@ -58,7 +58,8 @@ def iterate(index, mode):
 
     # Feed-forward
     for j in range (len(matrixArray)):
-        output_vector = getOutput(input_vector, matrixArray[j].T)
+        # output_vector = getOutput(input_vector, matrixArray[j].T)
+        output_vector = getOutput(input_vector, matrixArray[j])
         output_vectors_array.append(output_vector)
         input_vector = output_vector
 
@@ -138,21 +139,39 @@ def calculateError(output, target):
 
 def getOutput(inputVector, matrix):
 
-    # Ajout de l'entrée 1 pour chaque neurone
     size                = len(inputVector)
     inputVector         =  np.resize(inputVector, size + 1)
     inputVector[size]   = 1
-    resultArray         = np.zeros(len(matrix))
+    m = matrix.T
+   
+    # Avec dot
+    # Temps pour 10 itérations de 100 images
+    # Temps = 30s
+    # print matrix.shape
+    # print inputVector.shape
 
-    for i in range (len(matrix)):
-        result = 0
-        for j in range (len(matrix[i])):
-            result += inputVector[j] * matrix[i,j]
-        resultArray[i] = 1/(1 + math.exp(-result))
+    test = []
+    p = np.dot(m, inputVector)
+    for i in range (len(p)):
+        test.append(1/(1 + np.exp(-p[i])))
 
-    return resultArray
+    return test
 
 
+    # Temps pour 10 itérations de 100 images
+    # = 1m30
+    # Ajout de l'entrée 1 pour chaque neurone
+    # resultArray         = np.zeros(len(m))
+
+    # for i in range (len(m)):
+    #     result = 0
+    #     for j in range (len(m[i])):
+    #         result += inputVector[j] * m[i,j]
+    #     resultArray[i] = 1/(1 + math.exp(-result))
+
+    # return resultArray
+    
+    
 
 # c'est ce qui sera lancé lors que l'on fait python tuto_python.py
 if __name__ == '__main__':
@@ -172,13 +191,13 @@ if __name__ == '__main__':
     
 
     print "Lancement de la phase d'apprentissage"
-    for i in range(100):
+    for i in range(10):
         print "Iteration " + str(i)
         for j in indices:
             learn(j)
 
-    print "##########################"
+    # print "##########################"
     
-    print "Lancement de la phase de test"
-    for j in range(100):
-        test(j)
+    # print "Lancement de la phase de test"
+    # for j in range(100):
+    #     test(j)
