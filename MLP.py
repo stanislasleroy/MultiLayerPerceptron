@@ -142,35 +142,29 @@ def getOutput(inputVector, matrix):
     size                = len(inputVector)
     inputVector         =  np.resize(inputVector, size + 1)
     inputVector[size]   = 1
-    m = matrix.T
    
-    # Avec dot
+    ####################
+    # Avec np.dot
     # Temps pour 10 itérations de 100 images
     # Temps = 30s
-    # print matrix.shape
-    # print inputVector.shape
-
-    test = []
-    p = np.dot(m, inputVector)
+   
+    resultArray = []
+    p = np.dot(matrix.T, inputVector)
     for i in range (len(p)):
-        test.append(1/(1 + np.exp(-p[i])))
+        resultArray.append(1/(1 + np.exp(-p[i])))
 
-    return test
+    return resultArray
+    ####################
 
 
+    ####################
+    # Avec np.exp
     # Temps pour 10 itérations de 100 images
-    # = 1m30
-    # Ajout de l'entrée 1 pour chaque neurone
-    # resultArray         = np.zeros(len(m))
+    # 37 secondes sur batterie
 
-    # for i in range (len(m)):
-    #     result = 0
-    #     for j in range (len(m[i])):
-    #         result += inputVector[j] * m[i,j]
-    #     resultArray[i] = 1/(1 + math.exp(-result))
+    # return (1 / (1 + np.exp(-np.dot(matrix.T, inputVector))))
+    ####################
 
-    # return resultArray
-    
     
 
 # c'est ce qui sera lancé lors que l'on fait python tuto_python.py
