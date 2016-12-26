@@ -190,9 +190,6 @@ def getOutput(inputVector, matrix):
     # Temps pour 10 itérations de 100 images
     # 37 secondes sur batterie
     # Test à refaire sur secteur
-    # resultArray = []
-    # p = np.dot(m, inputVector)
-    # res = 1 / (1 + np.exp(-1 * p) )
     res2 = 1 / (1 + np.exp(-1 * np.dot(matrix.T, inputVector)) )
 
     print "res2"
@@ -207,7 +204,7 @@ def getOutput(inputVector, matrix):
     # Temps pour 10 itérations de 100 images
     # = 1m30
     # Ajout de l'entrée 1 pour chaque neurone
-    # resultArray         = np.zeros(len(m))
+    resultArray         = np.zeros(len(m))
 
     for i in range (len(m)):
         result = 0
