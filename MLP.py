@@ -142,29 +142,84 @@ def getOutput(inputVector, matrix):
     size                = len(inputVector)
     inputVector         =  np.resize(inputVector, size + 1)
     inputVector[size]   = 1
+    m                   = matrix.T
    
     ####################
     # Avec np.dot
     # Temps pour 10 itérations de 100 images
     # Temps = 30s
+    # print matrix.shape
+    # print inputVector.shape
    
-    resultArray = []
-    p = np.dot(matrix.T, inputVector)
+    resultArray1 = []
+    p = np.dot(m, inputVector)
     for i in range (len(p)):
-        resultArray.append(1/(1 + np.exp(-p[i])))
+        resultArray1.append(1/(1 + np.exp(-p[i])))
 
-    return resultArray
+    print "resultArray1"
+    # return resultArray1
+
     ####################
+
+
+
+    ####################
+    one = np.ones(len(p))
+    res1 = one / (one + np.exp(-1 * p))
+    
+    # print one.shape
+    # res = np.exp(-1 * p)
+    # print res.shape
+    # print res
+
+    # res = []
+    
+    print "res1"
+    print res1
+
+    # print "resultArray"
+    # print resultArray
+
+    # return resultArray
+    ####################
+
 
 
     ####################
     # Avec np.exp
     # Temps pour 10 itérations de 100 images
     # 37 secondes sur batterie
+    # Test à refaire sur secteur
+    # resultArray = []
+    # p = np.dot(m, inputVector)
+    # res = 1 / (1 + np.exp(-1 * p) )
+    res2 = 1 / (1 + np.exp(-1 * np.dot(matrix.T, inputVector)) )
 
+    print "res2"
+    print res2
     # return (1 / (1 + np.exp(-np.dot(matrix.T, inputVector))))
     ####################
 
+
+
+    ####################
+    # Code originel
+    # Temps pour 10 itérations de 100 images
+    # = 1m30
+    # Ajout de l'entrée 1 pour chaque neurone
+    # resultArray         = np.zeros(len(m))
+
+    for i in range (len(m)):
+        result = 0
+        for j in range (len(m[i])):
+            result += inputVector[j] * m[i,j]
+        resultArray[i] = 1/(1 + math.exp(-result))
+
+    print "resultArray"
+    print resultArray
+
+    return resultArray
+    ####################
     
 
 # c'est ce qui sera lancé lors que l'on fait python tuto_python.py
@@ -180,12 +235,12 @@ if __name__ == '__main__':
     n = np.shape(data[0][0])[0]
     print "Nb d'images " + str(n)
     # on créé un vecteur de (10,) valeurs entières prises aléatoirement entre 0 et n-1
-    indices = np.random.randint(n,size=(100,))
+    indices = np.random.randint(n,size=(1,))
     # il va valoir itérativement les valeurs dans indices / NB on aurait aussi pu écrire "for j in xrange(10): i = indices[j]"
     
 
     print "Lancement de la phase d'apprentissage"
-    for i in range(10):
+    for i in range(1):
         print "Iteration " + str(i)
         for j in indices:
             learn(j)
@@ -195,3 +250,25 @@ if __name__ == '__main__':
     # print "Lancement de la phase de test"
     # for j in range(100):
     #     test(j)
+
+
+
+    # def calculateError(output, target):
+
+    # res = []
+
+    #  np.dot(, (target - output).T)
+
+
+    # print "res"  
+    # print res
+
+
+    # err = np.zeros(len(output))
+    # #  𝛿i = yi . (1 − yi) . (ti − yi)
+    # for i in range (len(output)):
+    #     err[i] = output[i] * ( 1 - output[i]) * (target[i] - output[i])
+   
+    # print "err"
+    # print err 
+    # return err
