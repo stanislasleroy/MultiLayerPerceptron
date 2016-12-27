@@ -16,7 +16,7 @@ import math
 nb_neuron_input_layer       = 784 # 784 neurones en entrée
 nb_neuron_per_hidden_layer  = 10
 nb_neuron_output_layer      = 10 # 10 neurones en sortie pour les 10 classes [0..9]
-nb_hidden_layer             = 1
+nb_hidden_layer             = 2
 nb_layers                   = nb_hidden_layer + 2
 matrixArray                 = [] # Tableau contenant les différentes matrices
 learningRate                = 0.3
@@ -58,7 +58,6 @@ def iterate(index, mode):
 
     # Feed-forward
     for j in range (len(matrixArray)):
-        # output_vector = getOutput(input_vector, matrixArray[j].T)
         output_vector = getOutput(input_vector, matrixArray[j])
         output_vectors_array.append(output_vector)
         input_vector = output_vector
@@ -76,40 +75,96 @@ def learn(index):
 
     for i in reversed(range(nb_layers)):
         if(i != len(matrixArray) and i != 0):
-            sommme                  = 0
+            # sommme                  = 0
             error_array_current     = []
             matrix                  = matrixArray[i]
             error_array_above       = layer_error_array
             current_output_vector   = output_vectors_array[len(matrixArray) - i - 1]
 
-             # 𝛿j(n) = yj(n) . [1 − yj(n)] . SOMME 𝛿(n) . wkj(n)
-            for l in range(len(current_output_vector)):
-                for n in range(len(matrix[l])):
-                    sommme = matrix[l,n] * error_array_above[n]
-                
-                error_array_current.append(current_output_vector[i] * (1 - current_output_vector[i]) * sommme)
+            # Optimiser
+            # test = current_output_vector[i] * (1 - current_output_vector[i]) * (np.dot(matrix.T, error_array_above))
             
-            layer_error_array = error_array_current
-            errors_array.append(error_array_current)
+            # print "matrix"
+            # print matrix
+            # print "###############"
+            # print len(matrixArray)
+            # print i
+            # print "error_array_above"
+            # print error_array_above
 
-    ordered_errors_array = list(reversed(errors_array)) 
+            # if(i == len(matrixArray) + 1):
+            #     err = error_array_above[:-1]
+            # else:
+            #     err = error_array_above
+            
+            # print "err"
+            # print err
+            # print "current_output_vector"
+            # print current_output_vector
+
+            # test = np.dot(matrix, error_array_above.T)
+            test = current_output_vector[i] * (1 - current_output_vector[i]) * np.dot(matrix, np.asarray(error_array_above).T)
+            test2 = test[:-1]
+
+            layer_error_array = test2
+            errors_array.append(test2)
+
+             # 𝛿j(n) = yj(n) . [1 − yj(n)] . SOMME 𝛿(n) . wkj(n)
+            # for l in range(len(current_output_vector)):
+            #     sommme = 0
+            #     for n in range(len(matrix[l])):
+            #         sommme += matrix[l,n] * error_array_above[n]
+                
+            #     error_array_current.append(current_output_vector[i] * (1 - current_output_vector[i]) * sommme)
+            
+            # layer_error_array = error_array_current
+            # errors_array.append(error_array_current)
+
+            # print "layer_error_array.shape"
+            # print layer_error_array.shape
+
+            # print "layer_error_array"
+            # print error_array_current
+
+            # print "test2"
+            # print test.shape
+            # print test2
+
+
+    ordered_errors_array = list(reversed(errors_array))
     # for y, m in list(enumerate(ordered_errors_array)):
-    #     print m 
+    #     print m
+
+
+
 
     # Mise à jour des poids
     #  wji(n) = wji(n − 1) + η . 𝛿j(n) . yi(n)
     for i in range(len(matrixArray)):
         # Pour chaque matrice
-        matrix = matrixArray[i].T
-        # matrix = matrix.T
-        error  = ordered_errors_array[i]
-        output = output_vectors_array[i]
+        # matrix = matrixArray[i].T
+        matrix2 = matrixArray[i]
 
-        for j in range(len(matrix)):
-            for k in range(len(matrix[j])):
-                new_w =  matrix[j,k] + learningRate * error[j] * output[j]
-                matrix[j,k] = new_w
+        # error  = ordered_errors_array[i]
+        # output = output_vectors_array[i]
 
+        error2  = np.asarray(ordered_errors_array[i])
+        output2 = np.asarray(output_vectors_array[i])     
+
+        new_m = matrix2 + learningRate * error2 * output2
+        matrix = new_m.T
+
+        # print "new_m"
+        # print new_m.T
+
+        # for j in range(len(matrix)):
+        #     for k in range(len(matrix[j])):
+        #         new_w =  matrix[j,k] + learningRate * error[j] * output[j]
+        #         matrix[j,k] = new_w
+
+        # print "matrix after"
+        # print matrix
+       
 
 
 def test(index):
@@ -129,12 +184,8 @@ def test(index):
 
 
 def calculateError(output, target):
-    err = np.zeros(len(output))
     #  𝛿i = yi . (1 − yi) . (ti − yi)
-    for i in range (len(output)):
-        err[i] = output[i] * ( 1 - output[i]) * (target[i] - output[i])
-    return err
-
+    return  output * (1 - output) * (target - output)
 
 
 def getOutput(inputVector, matrix):
@@ -142,82 +193,14 @@ def getOutput(inputVector, matrix):
     size                = len(inputVector)
     inputVector         =  np.resize(inputVector, size + 1)
     inputVector[size]   = 1
-    m                   = matrix.T
-   
-    ####################
-    # Avec np.dot
-    # Temps pour 10 itérations de 100 images
-    # Temps = 30s
-    # print matrix.shape
+
+    # print inputVector
     # print inputVector.shape
-   
-    resultArray1 = []
-    p = np.dot(m, inputVector)
-    for i in range (len(p)):
-        resultArray1.append(1/(1 + np.exp(-p[i])))
-
-    print "resultArray1"
-    # return resultArray1
-
-    ####################
-
-
-
-    ####################
-    one = np.ones(len(p))
-    res1 = one / (one + np.exp(-1 * p))
+    # print matrix.shape
     
-    # print one.shape
-    # res = np.exp(-1 * p)
-    # print res.shape
-    # print res
-
-    # res = []
-    
-    print "res1"
-    print res1
-
-    # print "resultArray"
-    # print resultArray
-
-    # return resultArray
-    ####################
+    return (1 / (1 + np.exp(-np.dot(matrix.T, inputVector))))
 
 
-
-    ####################
-    # Avec np.exp
-    # Temps pour 10 itérations de 100 images
-    # 37 secondes sur batterie
-    # Test à refaire sur secteur
-    res2 = 1 / (1 + np.exp(-1 * np.dot(matrix.T, inputVector)) )
-
-    print "res2"
-    print res2
-    # return (1 / (1 + np.exp(-np.dot(matrix.T, inputVector))))
-    ####################
-
-
-
-    ####################
-    # Code originel
-    # Temps pour 10 itérations de 100 images
-    # = 1m30
-    # Ajout de l'entrée 1 pour chaque neurone
-    resultArray         = np.zeros(len(m))
-
-    for i in range (len(m)):
-        result = 0
-        for j in range (len(m[i])):
-            result += inputVector[j] * m[i,j]
-        resultArray[i] = 1/(1 + math.exp(-result))
-
-    print "resultArray"
-    print resultArray
-
-    return resultArray
-    ####################
-    
 
 # c'est ce qui sera lancé lors que l'on fait python tuto_python.py
 if __name__ == '__main__':
@@ -232,40 +215,20 @@ if __name__ == '__main__':
     n = np.shape(data[0][0])[0]
     print "Nb d'images " + str(n)
     # on créé un vecteur de (10,) valeurs entières prises aléatoirement entre 0 et n-1
-    indices = np.random.randint(n,size=(1,))
+    indices = np.random.randint(n,size=(100000,))
+    # indices = np.random.randint(n,size=(1,))
     # il va valoir itérativement les valeurs dans indices / NB on aurait aussi pu écrire "for j in xrange(10): i = indices[j]"
     
 
     print "Lancement de la phase d'apprentissage"
-    for i in range(1):
+    for i in range(100):
+    # for i in range(1):
         print "Iteration " + str(i)
         for j in indices:
             learn(j)
 
     # print "##########################"
     
-    # print "Lancement de la phase de test"
-    # for j in range(100):
-    #     test(j)
-
-
-
-    # def calculateError(output, target):
-
-    # res = []
-
-    #  np.dot(, (target - output).T)
-
-
-    # print "res"  
-    # print res
-
-
-    # err = np.zeros(len(output))
-    # #  𝛿i = yi . (1 − yi) . (ti − yi)
-    # for i in range (len(output)):
-    #     err[i] = output[i] * ( 1 - output[i]) * (target[i] - output[i])
-   
-    # print "err"
-    # print err 
-    # return err
+    print "Lancement de la phase de test"
+    for j in range(100):
+        test(j)
